@@ -1,146 +1,156 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Porcupine-Run</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <header class="topbar">
-    <div class="container topbar-inner">
-      <div class="brand">
-        <div class="logo">PR</div>
-        <div>
-          <div class="title">Porcupine-Run</div>
-          <div class="subtitle">Created by <strong>Parth Pankaj Bakhda</strong></div>
-        </div>
-      </div>
+:root{
+  --bg:#0b1220;
+  --text:#eaf0ff;
+  --muted:#a8b4d6;
+  --line:rgba(255,255,255,.10);
+  --shadow: 0 18px 60px rgba(0,0,0,.45);
+}
 
-      <div class="pill-row">
-        <div class="pill">Arrow Keys: Move</div>
-        <div class="pill">Shift: Sprint</div>
-        <div class="pill">P: Pause</div>
-      </div>
-    </div>
-  </header>
+*{ box-sizing:border-box; }
+body{
+  margin:0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: radial-gradient(1200px 600px at 20% 10%, rgba(96,165,250,.18), transparent 60%),
+              radial-gradient(900px 500px at 80% 20%, rgba(94,234,212,.14), transparent 55%),
+              var(--bg);
+  color: var(--text);
+}
+.container{ width:min(1120px, 92vw); margin:0 auto; }
 
-  <main class="main">
-    <div class="container game-shell">
-      <section class="left-panel">
-        <div class="card">
-          <h2>Objective</h2>
-          <p>
-            Stay alive while two porcupines chase you and shoot spikes.
-            You have <strong>8 hearts</strong>. If a spike hits you, you lose a heart.
-          </p>
-          <ul class="list">
-            <li><strong>Survival points</strong>: +50 every 20 seconds alive</li>
-            <li><strong>Flower points</strong>: collect flowers for bonus points</li>
-            <li><strong>Strategy</strong>: lead porcupines near flowers to distract them</li>
-          </ul>
-        </div>
+.topbar{
+  position: sticky; top: 0;
+  background: rgba(11,18,32,.72);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+  z-index: 50;
+}
+.topbar-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 14px 0;
+  gap: 14px;
+}
+.brand{ display:flex; align-items:center; gap:12px; }
+.logo{
+  width:40px; height:40px; border-radius:12px;
+  display:grid; place-items:center;
+  background: linear-gradient(135deg, rgba(94,234,212,.25), rgba(96,165,250,.25));
+  border: 1px solid rgba(255,255,255,.14);
+  box-shadow: var(--shadow);
+  font-weight:900;
+}
+.brand-name{ font-weight:900; }
+.brand-tag{ font-size:12px; color:var(--muted); margin-top:2px; }
 
-        <div class="card">
-          <h2>Levels</h2>
-          <p class="muted">Reach the score goal to advance.</p>
-          <div id="levelsBox" class="levels"></div>
-        </div>
+.hud-right{ display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+.pill{
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.05);
+  padding: 8px 10px;
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.pill.score{
+  border-color: rgba(94,234,212,.35);
+  background: linear-gradient(135deg, rgba(94,234,212,.18), rgba(96,165,250,.12));
+  color: var(--text);
+  font-weight:900;
+}
 
-        <div class="card">
-          <h2>Tips</h2>
-          <ul class="list">
-            <li>Zigzag to dodge spikes.</li>
-            <li>Use sprint sparingly (it drains stamina).</li>
-            <li>Flowers distract porcupines—use them as “reset points”.</li>
-          </ul>
-        </div>
-      </section>
+.stage{ padding: 18px 0 30px; }
+.game-shell{
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(15,26,46,.55);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  overflow:hidden;
+  position: relative;
+}
+canvas{
+  width: 100%;
+  height: auto;
+  display:block;
+  background: #0a1a0f;
+}
 
-      <section class="right-panel">
-        <div class="hud card">
-          <div class="hud-row">
-            <div class="hud-left">
-              <div class="hud-title">Live HUD</div>
-              <div id="hearts" class="hearts" aria-label="Health hearts"></div>
-            </div>
-            <div class="hud-right">
-              <div class="stat">
-                <div class="stat-label">Score</div>
-                <div id="score" class="stat-value">0</div>
-              </div>
-              <div class="stat">
-                <div class="stat-label">Level</div>
-                <div id="level" class="stat-value">1</div>
-              </div>
-              <div class="stat">
-                <div class="stat-label">Goal</div>
-                <div id="goal" class="stat-value">1000</div>
-              </div>
-            </div>
-          </div>
+.bottom-hud{
+  border-top: 1px solid var(--line);
+  padding: 12px 14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+  flex-wrap:wrap;
+}
+.hearts{ display:flex; gap:6px; align-items:center; }
+.heart{
+  width: 18px; height: 18px;
+  display:inline-block;
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,.35));
+}
+.status{ color: var(--muted); font-weight:800; }
+.mini{ display:flex; gap:8px; flex-wrap:wrap; }
+.tag{
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04);
+  padding: 6px 8px;
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 12px;
+}
 
-          <div class="hud-row">
-            <div class="bar-wrap">
-              <div class="bar-label">Stamina</div>
-              <div class="bar">
-                <div id="staminaFill" class="bar-fill"></div>
-              </div>
-            </div>
-            <div class="bar-wrap">
-              <div class="bar-label">Invincibility</div>
-              <div class="bar">
-                <div id="iFramesFill" class="bar-fill alt"></div>
-              </div>
-            </div>
-          </div>
-        </div>
+.overlay{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  background: rgba(0,0,0,.48);
+  backdrop-filter: blur(6px);
+}
+.hidden{ display:none; }
+.card{
+  width: min(720px, 92vw);
+  border: 1px solid rgba(255,255,255,.12);
+  background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  padding: 18px;
+}
+.card h1, .card h2{ margin:0; }
+.sub{ color: var(--muted); margin-top: 10px; line-height: 1.5; }
+.creator{ margin-top: 12px; color: var(--muted); }
+.tips{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+.tip{
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04);
+  border-radius: 14px;
+  padding: 10px;
+  color: var(--muted);
+}
+.controls-row{ display:flex; gap:10px; flex-wrap:wrap; margin-top: 14px; }
+.btn{
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.06);
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 900;
+}
+.btn:hover{ background: rgba(255,255,255,.10); }
+.btn.primary{
+  border-color: rgba(94,234,212,.35);
+  background: linear-gradient(135deg, rgba(94,234,212,.22), rgba(96,165,250,.18));
+}
+.list{ color: var(--muted); line-height:1.55; margin: 10px 0 0; padding-left: 18px; }
 
-        <div class="canvas-wrap card">
-          <canvas id="game" width="1100" height="650"></canvas>
-
-          <!-- Overlay screens -->
-          <div id="overlay" class="overlay">
-            <div class="overlay-card">
-              <div class="overlay-top">
-                <div class="overlay-badge">Porcupine-Run</div>
-                <div class="overlay-created">Created by <strong>Parth Pankaj Bakhda</strong></div>
-              </div>
-
-              <h1 id="overlayTitle">Ready?</h1>
-              <p id="overlayText" class="muted">
-                Survive. Dodge spikes. Use flowers to distract porcupines. Reach the level goal.
-              </p>
-
-              <div class="overlay-actions">
-                <button id="startBtn" class="btn primary">Start Game</button>
-                <button id="howBtn" class="btn secondary">How to Play</button>
-              </div>
-
-              <div id="howBox" class="how hidden">
-                <ul class="list">
-                  <li><strong>Move</strong> with arrow keys.</li>
-                  <li><strong>Sprint</strong> with Shift (uses stamina).</li>
-                  <li>Porcupines shoot spikes when close and with line-of-sight.</li>
-                  <li>Touch flowers to collect them; porcupines that reach flowers stop to eat.</li>
-                  <li>Survival points tick automatically. Collect flowers for extra points.</li>
-                </ul>
-              </div>
-
-              <div class="tiny muted">Press <strong>P</strong> anytime to pause.</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card footer-card">
-          <div class="muted small">
-            Note: This is a pure front-end game (HTML/CSS/JS). You can expand it with images, sound, mobile controls, and more enemies later.
-          </div>
-        </div>
-      </section>
-    </div>
-  </main>
-
-  <script src="game.js"></script>
-</body>
-</html>
+@media (max-width: 720px){
+  .tips{ grid-template-columns: 1fr; }
+}

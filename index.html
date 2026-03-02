@@ -1,8 +1,8 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Porcupine-Run</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -11,133 +11,97 @@
     <div class="container topbar-inner">
       <div class="brand">
         <div class="logo">PR</div>
-        <div>
-          <div class="title">Porcupine-Run</div>
-          <div class="subtitle">Created by <strong>Parth Pankaj Bakhda</strong></div>
+        <div class="brand-text">
+          <div class="brand-name">Porcupine-Run</div>
+          <div class="brand-tag">Survive • Distract • Score • Level up</div>
         </div>
       </div>
 
-      <div class="pill-row">
-        <div class="pill">Arrow Keys: Move</div>
-        <div class="pill">Shift: Sprint</div>
-        <div class="pill">P: Pause</div>
+      <div class="hud-right">
+        <div class="pill" id="levelPill">Level 1</div>
+        <div class="pill" id="goalPill">Goal: 1000</div>
+        <div class="pill score" id="scorePill">Score: 0</div>
       </div>
     </div>
   </header>
 
-  <main class="main">
-    <div class="container game-shell">
-      <section class="left-panel">
-        <div class="card">
-          <h2>Objective</h2>
-          <p>
-            Stay alive while two porcupines chase you and shoot spikes.
-            You have <strong>8 hearts</strong>. If a spike hits you, you lose a heart.
-          </p>
-          <ul class="list">
-            <li><strong>Survival points</strong>: +50 every 20 seconds alive</li>
-            <li><strong>Flower points</strong>: collect flowers for bonus points</li>
-            <li><strong>Strategy</strong>: lead porcupines near flowers to distract them</li>
-          </ul>
-        </div>
+  <main class="stage">
+    <div class="container">
+      <div class="game-shell">
+        <canvas id="game" width="1100" height="640"></canvas>
 
-        <div class="card">
-          <h2>Levels</h2>
-          <p class="muted">Reach the score goal to advance.</p>
-          <div id="levelsBox" class="levels"></div>
-        </div>
+        <div class="overlay" id="startOverlay">
+          <div class="card">
+            <h1>Porcupine-Run</h1>
+            <p class="sub">
+              You are a civilian on a huge grass map. Two porcupines hunt you and shoot spikes.
+              Dodge, survive, and lure porcupines to flowers to distract them.
+            </p>
 
-        <div class="card">
-          <h2>Tips</h2>
-          <ul class="list">
-            <li>Zigzag to dodge spikes.</li>
-            <li>Use sprint sparingly (it drains stamina).</li>
-            <li>Flowers distract porcupines—use them as “reset points”.</li>
-          </ul>
-        </div>
-      </section>
-
-      <section class="right-panel">
-        <div class="hud card">
-          <div class="hud-row">
-            <div class="hud-left">
-              <div class="hud-title">Live HUD</div>
-              <div id="hearts" class="hearts" aria-label="Health hearts"></div>
+            <div class="tips">
+              <div class="tip"><b>Move:</b> Arrow keys</div>
+              <div class="tip"><b>Flowers:</b> Touch to trigger porcupine eating (5s) +100 pts</div>
+              <div class="tip"><b>Survival:</b> +50 pts every 20s</div>
+              <div class="tip"><b>Win:</b> Reach each goal up to 20,000</div>
             </div>
-            <div class="hud-right">
-              <div class="stat">
-                <div class="stat-label">Score</div>
-                <div id="score" class="stat-value">0</div>
-              </div>
-              <div class="stat">
-                <div class="stat-label">Level</div>
-                <div id="level" class="stat-value">1</div>
-              </div>
-              <div class="stat">
-                <div class="stat-label">Goal</div>
-                <div id="goal" class="stat-value">1000</div>
-              </div>
+
+            <div class="controls-row">
+              <button class="btn primary" id="startBtn">Start Game</button>
+              <button class="btn" id="howBtn">How to Play</button>
             </div>
+
+            <div class="creator">Created by <strong>Parth Pankaj Bakhda</strong></div>
           </div>
+        </div>
 
-          <div class="hud-row">
-            <div class="bar-wrap">
-              <div class="bar-label">Stamina</div>
-              <div class="bar">
-                <div id="staminaFill" class="bar-fill"></div>
-              </div>
-            </div>
-            <div class="bar-wrap">
-              <div class="bar-label">Invincibility</div>
-              <div class="bar">
-                <div id="iFramesFill" class="bar-fill alt"></div>
-              </div>
+        <div class="overlay hidden" id="howOverlay">
+          <div class="card">
+            <h2>How to Play</h2>
+            <ul class="list">
+              <li>Run from the porcupines. If they get close, they’ll hit you and you lose hearts.</li>
+              <li>They also shoot spikes. Dodge by zigzagging or moving up/down quickly.</li>
+              <li>Touch flowers to “activate” them: porcupines get distracted & eat for 5 seconds.</li>
+              <li>Each flower distraction gives you <b>+100 points</b>.</li>
+              <li>Every 20 seconds you survive: <b>+50 points</b>.</li>
+              <li>Reach the score goal to level up. Final goal is <b>20,000</b>.</li>
+            </ul>
+            <div class="controls-row">
+              <button class="btn primary" id="backBtn">Back</button>
             </div>
           </div>
         </div>
 
-        <div class="canvas-wrap card">
-          <canvas id="game" width="1100" height="650"></canvas>
-
-          <!-- Overlay screens -->
-          <div id="overlay" class="overlay">
-            <div class="overlay-card">
-              <div class="overlay-top">
-                <div class="overlay-badge">Porcupine-Run</div>
-                <div class="overlay-created">Created by <strong>Parth Pankaj Bakhda</strong></div>
-              </div>
-
-              <h1 id="overlayTitle">Ready?</h1>
-              <p id="overlayText" class="muted">
-                Survive. Dodge spikes. Use flowers to distract porcupines. Reach the level goal.
-              </p>
-
-              <div class="overlay-actions">
-                <button id="startBtn" class="btn primary">Start Game</button>
-                <button id="howBtn" class="btn secondary">How to Play</button>
-              </div>
-
-              <div id="howBox" class="how hidden">
-                <ul class="list">
-                  <li><strong>Move</strong> with arrow keys.</li>
-                  <li><strong>Sprint</strong> with Shift (uses stamina).</li>
-                  <li>Porcupines shoot spikes when close and with line-of-sight.</li>
-                  <li>Touch flowers to collect them; porcupines that reach flowers stop to eat.</li>
-                  <li>Survival points tick automatically. Collect flowers for extra points.</li>
-                </ul>
-              </div>
-
-              <div class="tiny muted">Press <strong>P</strong> anytime to pause.</div>
+        <div class="overlay hidden" id="gameOverOverlay">
+          <div class="card">
+            <h1>Game Over</h1>
+            <p class="sub" id="finalText">You were caught!</p>
+            <div class="controls-row">
+              <button class="btn primary" id="restartBtn">Restart</button>
+              <button class="btn" id="menuBtn">Main Menu</button>
             </div>
           </div>
         </div>
 
-        <div class="card footer-card">
-          <div class="muted small">
-            Note: This is a pure front-end game (HTML/CSS/JS). You can expand it with images, sound, mobile controls, and more enemies later.
+        <div class="overlay hidden" id="winOverlay">
+          <div class="card">
+            <h1>You Win!</h1>
+            <p class="sub">You reached the final goal: <b>20,000</b> points.</p>
+            <div class="controls-row">
+              <button class="btn primary" id="playAgainBtn">Play Again</button>
+            </div>
           </div>
         </div>
-      </section>
+
+        <div class="bottom-hud">
+          <div class="hearts" id="hearts"></div>
+          <div class="status" id="statusText">Press Start</div>
+          <div class="mini">
+            <div class="tag">Difficulty ramps each level</div>
+            <div class="tag">Flowers spawn across the map</div>
+            <div class="tag">Spikes get faster later</div>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 
