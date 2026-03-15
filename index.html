@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover"
+  />
   <title>Porcupine-Run</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -13,14 +16,14 @@
         <div class="logo">PR</div>
         <div class="brand-text">
           <div class="brand-name">Porcupine-Run</div>
-          <div class="brand-tag">Survive • Distract • Score • Level up</div>
+          <div class="brand-tag">Run • Dodge • Distract • Survive</div>
         </div>
       </div>
 
-      <div class="hud-right">
-        <div class="pill" id="levelPill">Level 1</div>
-        <div class="pill" id="goalPill">Goal: 1000</div>
-        <div class="pill score" id="scorePill">Score: 0</div>
+      <div class="hud-top">
+        <div class="pill" id="levelText">Level 1</div>
+        <div class="pill" id="goalText">Goal: 1000</div>
+        <div class="pill score" id="scoreText">Score: 0</div>
       </div>
     </div>
   </header>
@@ -28,26 +31,26 @@
   <main class="stage">
     <div class="container">
       <div class="game-shell">
-        <canvas id="game" width="1100" height="640"></canvas>
+        <canvas id="gameCanvas"></canvas>
 
-        <div class="overlay" id="startOverlay">
+        <div class="overlay" id="menuOverlay">
           <div class="card">
             <h1>Porcupine-Run</h1>
             <p class="sub">
-              You are a civilian on a huge grass map. Two porcupines hunt you and shoot spikes.
-              Dodge, survive, and lure porcupines to flowers to distract them.
+              Escape two porcupines, dodge their spikes, and lure them to flowers so they stop to eat.
+              Score points, survive, and clear every level up to 20,000.
             </p>
 
             <div class="tips">
-              <div class="tip"><b>Move:</b> Arrow keys</div>
-              <div class="tip"><b>Flowers:</b> Touch to trigger porcupine eating (5s) +100 pts</div>
-              <div class="tip"><b>Survival:</b> +50 pts every 20s</div>
-              <div class="tip"><b>Win:</b> Reach each goal up to 20,000</div>
+              <div class="tip"><b>Desktop:</b> Arrow keys</div>
+              <div class="tip"><b>Mobile:</b> Touch joystick</div>
+              <div class="tip"><b>Flowers:</b> +100 and distract porcupines for 3 seconds</div>
+              <div class="tip"><b>Survival:</b> +50 every 20 seconds</div>
             </div>
 
             <div class="controls-row">
               <button class="btn primary" id="startBtn">Start Game</button>
-              <button class="btn" id="howBtn">How to Play</button>
+              <button class="btn" id="howBtn">How To Play</button>
             </div>
 
             <div class="creator">Created by <strong>Parth Pankaj Bakhda</strong></div>
@@ -56,14 +59,15 @@
 
         <div class="overlay hidden" id="howOverlay">
           <div class="card">
-            <h2>How to Play</h2>
+            <h2>How To Play</h2>
             <ul class="list">
-              <li>Run from the porcupines. If they get close, they’ll hit you and you lose hearts.</li>
-              <li>They also shoot spikes. Dodge by zigzagging or moving up/down quickly.</li>
-              <li>Touch flowers to “activate” them: porcupines get distracted & eat for 5 seconds.</li>
-              <li>Each flower distraction gives you <b>+100 points</b>.</li>
-              <li>Every 20 seconds you survive: <b>+50 points</b>.</li>
-              <li>Reach the score goal to level up. Final goal is <b>20,000</b>.</li>
+              <li>You have <b>8 hearts</b>.</li>
+              <li>Two porcupines chase you and shoot spikes.</li>
+              <li>If a porcupine or spike hits you, you lose a heart.</li>
+              <li>Touch flowers to distract both porcupines for <b>3 seconds</b>.</li>
+              <li>Each flower distraction gives <b>100 points</b>.</li>
+              <li>Every 20 seconds survived gives <b>50 points</b>.</li>
+              <li>Goals: 1000 → 2500 → 5000 → 7500 → 10000 → 12500 → 15000 → 17500 → 20000</li>
             </ul>
             <div class="controls-row">
               <button class="btn primary" id="backBtn">Back</button>
@@ -74,7 +78,13 @@
         <div class="overlay hidden" id="gameOverOverlay">
           <div class="card">
             <h1>Game Over</h1>
-            <p class="sub" id="finalText">You were caught!</p>
+            <p class="sub" id="gameOverMessage">You were caught.</p>
+
+            <div class="highscore-box">
+              <div class="highscore-title">High Scores</div>
+              <div id="highscoreList"></div>
+            </div>
+
             <div class="controls-row">
               <button class="btn primary" id="restartBtn">Restart</button>
               <button class="btn" id="menuBtn">Main Menu</button>
@@ -85,7 +95,13 @@
         <div class="overlay hidden" id="winOverlay">
           <div class="card">
             <h1>You Win!</h1>
-            <p class="sub">You reached the final goal: <b>20,000</b> points.</p>
+            <p class="sub">You reached the final goal of 20,000 points.</p>
+
+            <div class="highscore-box">
+              <div class="highscore-title">High Scores</div>
+              <div id="winHighscoreList"></div>
+            </div>
+
             <div class="controls-row">
               <button class="btn primary" id="playAgainBtn">Play Again</button>
             </div>
@@ -93,12 +109,13 @@
         </div>
 
         <div class="bottom-hud">
-          <div class="hearts" id="hearts"></div>
+          <div class="hearts" id="heartsWrap"></div>
           <div class="status" id="statusText">Press Start</div>
-          <div class="mini">
-            <div class="tag">Difficulty ramps each level</div>
-            <div class="tag">Flowers spawn across the map</div>
-            <div class="tag">Spikes get faster later</div>
+        </div>
+
+        <div class="mobile-controls" id="mobileControls">
+          <div class="joystick-base" id="joystickBase">
+            <div class="joystick-knob" id="joystickKnob"></div>
           </div>
         </div>
       </div>
